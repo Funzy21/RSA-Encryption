@@ -11,6 +11,13 @@ def encrypt(plaintext: str, public_key: RSA.RsaKey):
     ciphertext = cipher_rsa.encrypt(plaintext)
     return ciphertext
 
+def decrypt(ciphertext: str, private_key: RSA.RsaKey):
+    ciphertext = ciphertext.decode("utf-8")
+    cipher_rsa = PKCS1_OAEP.new(private_key)
+    plaintext = cipher_rsa.decrypt(ciphertext)
+    return plaintext
+
+
 # Encryption based on docs
 """
 message = "Hello this is a test message.".encode("utf-8")
@@ -75,7 +82,3 @@ def addSignature(message:str):
     h = SHA256.new(message)
     signature = PKCS1_v1_5.new(key).sign(h)
     PKCS1_v1_5.new(key).verify(h, signature)
-
-def decrypt(ciphertext: str):
-    # TODO: Decrypt the ciphertext using RSA-OAEP
-    pass
