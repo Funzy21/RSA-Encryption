@@ -5,11 +5,14 @@ from Cryptodome.Random import get_random_bytes
 from Cryptodome.Cipher import AES, PKCS1_OAEP
 
 
-# Segment into functions later on
-def encrypt(plaintext: str):
-    # TODO: Encrypt the plaintext using RSA-OAEP
-    pass
+def encrypt(plaintext: str, public_key: RSA.RsaKey):
+    plaintext = plaintext.encode("utf-8")
+    cipher_rsa = PKCS1_OAEP.new(public_key)
+    ciphertext = cipher_rsa.encrypt(plaintext)
+    return ciphertext
 
+# Encryption based on docs
+"""
 message = "Hello this is a test message.".encode("utf-8")
 
 recipient_key = RSA.import_key(open("receiver.pem").read())
@@ -30,7 +33,10 @@ with open("encrypted_data.bin", "wb") as f:
     f.write(cipher_aes.nonce)
     f.write(tag)
     f.write(ciphertext)
-    
+"""
+
+# Decryption based on docs
+"""
 private_key = RSA.import_key(open("private.pem").read())
 
 with open("encrypted_data.bin", "rb") as f:
@@ -47,6 +53,8 @@ session_key = cipher_rsa.decrypt(enc_session_key)
 cipher_aes = AES.new(session_key, AES.MODE_EAX, nonce)
 data = cipher_aes.decrypt_and_verify(ciphertext, tag)
 print(data.decode("utf-8"))
+
+"""
 
 # Generate a new RSA key pair and save it to a file
 def genRSA(code: str):
