@@ -56,16 +56,6 @@ print(data.decode("utf-8"))
 
 """
 
-# Generate a new RSA key pair and save it to a file
-def genRSA(code: str):
-    key = RSA.generate(bits = 3072)
-    encrypted_key = key.export_key(passphrase=code, pkcs=8,
-                                  protection="scryptAndAES128-CBC",
-                                  prot_params={'iteration_count':131072})
-    with open("rsa_key.bin", "wb") as f:
-        f.write(encrypted_key)
-    print(key.publickey().export_key())
-
 # Method to generate a new RSA key pair and save it to a file
 def genKeypair():
     key = RSA.generate(bits = 2048)
