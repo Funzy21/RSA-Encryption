@@ -5,17 +5,36 @@ from Cryptodome.Random import get_random_bytes
 from Cryptodome.Cipher import AES, PKCS1_OAEP
 
 
-def encrypt(plaintext: str, public_key: RSA.RsaKey):
+# Generate a new RSA key pair and save it to a file
+def genKeypair():
+    key = RSA.generate(2048)
+    private_key = key.export_key()
+    with open("private.pem", "wb") as f:
+        f.write(private_key)
+    public_key = key.publickey().export_key()
+    with open("receiver.pem", "wb") as f:
+        f.write(public_key)
+
+def encrypt(plaintext, public_key):
     plaintext = plaintext.encode("utf-8")
     cipher_rsa = PKCS1_OAEP.new(public_key)
     ciphertext = cipher_rsa.encrypt(plaintext)
     return ciphertext
 
-def decrypt(ciphertext: str, private_key: RSA.RsaKey):
+def decrypt(ciphertext, private_key):
     ciphertext = ciphertext.decode("utf-8")
     cipher_rsa = PKCS1_OAEP.new(private_key)
     plaintext = cipher_rsa.decrypt(ciphertext)
     return plaintext
+
+def addSignature(ciphertext, private_key):
+    h = SHA256.new(ciphertext)
+    # Signature
+    return PKCS1_v1_5.new(private_key).sign(h)
+
+def verifySignature(ciphertext, signature, public_key):
+    h = SHA256.new(ciphertext)
+    return PKCS1_v1_5.new(public_key).verify(h, signature)
 
 
 # Encryption based on docs
@@ -62,23 +81,3 @@ data = cipher_aes.decrypt_and_verify(ciphertext, tag)
 print(data.decode("utf-8"))
 
 """
-
-# Method to generate a new RSA key pair and save it to a file
-def genKeypair():
-    key = RSA.generate(bits = 2048)
-    private_key = key.export_key()
-    with open("private.pem", "wb") as f:
-        f.write(private_key)
-    public_key = key.publickey().export_key()
-    with open("receiver.pem", "wb") as f:
-        f.write(public_key)
-# Pad plaintext and add randomness (via hashing and XOR)
-def padding(plaintext: str):
-    return plaintext.encode()
-
-# Sign an encrypted message
-def addSignature(message:str):
-    key = RSA.import_key(open("receiver.pem").read())
-    h = SHA256.new(message)
-    signature = PKCS1_v1_5.new(key).sign(h)
-    PKCS1_v1_5.new(key).verify(h, signature)
