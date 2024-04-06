@@ -5,6 +5,7 @@ from Cryptodome.Cipher import PKCS1_OAEP
 import os
 import time
 
+
 def genMessage(message):
     if len(message) > 140:
         print("Error: Message exceeds 140 characters.")
