@@ -28,10 +28,11 @@ def encrypt(plaintext, public_key):
     plaintext = plaintext.encode("utf-8")
     cipher_rsa = PKCS1_OAEP.new(public_key)
     ciphertext = cipher_rsa.encrypt(plaintext)
+    with open ("encrypted_data.bin", "wb") as f:
+        f.write(ciphertext)
     return ciphertext
 
 def decrypt(ciphertext, private_key):
-    ciphertext = ciphertext.decode("utf-8")
     cipher_rsa = PKCS1_OAEP.new(private_key)
     plaintext = cipher_rsa.decrypt(ciphertext)
     return plaintext
@@ -51,14 +52,14 @@ def verifySignature(ciphertext, signature, public_key):
 # PLAYGROUND
 
 message = "Hello this is a test message."
-t = encrypt(message, RSA.import_key(open("sender_keys/sender.pem").read()))
+t = encrypt(message, RSA.import_key(open("receiver_keys/receiver.pem").read()))
 s = addSignature(t, RSA.import_key(open("sender_keys/private.pem").read()))
 
 # genKeypair() -> Uncomment to generate keypairs in your directories
-print(verifySignature(t, s, RSA.import_key(open("sender_keys/sender.pem").read()))) # Should return True if working
+#print(verifySignature(t, s, RSA.import_key(open("sender_keys/sender.pem").read()))) # Should return True if working
 
-# d = decrypt(t, RSA.import_key(open("receiver_keys/private.pem").read()))
-# print(d.decode("utf-8")) -> Decrypts not working yet, will add file writing and reading + fix later
+d = decrypt(t, RSA.import_key(open("receiver_keys/private.pem").read()))
+print(d.decode("utf-8"))
 # Encryption based on docs
 """
 message = "Hello this is a test message.".encode("utf-8")
