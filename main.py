@@ -3,6 +3,7 @@ from Cryptodome.Hash import SHA256
 from Cryptodome.Signature import PKCS1_v1_5
 from Cryptodome.Cipher import PKCS1_OAEP
 import os
+import time
 
 def genMessage(message):
     with open("message.txt", "w") as f:
@@ -83,6 +84,8 @@ def get_ciphertext():
 
 # Main program
 def main():
+    os.system("cls")
+
     while True:
         print("1. Generate new keypairs")
         print("2. Encrypt and Sign Message")
@@ -91,37 +94,48 @@ def main():
         print("5. Exit")
         choice = input("Select Operation: ")
         if choice == "1":
+            os.system("cls")
             print("Generating new keypairs...")
             genKeypairs()
-            os.system("cls")
+            time.sleep(0.25)
             print("\nKeypairs generated successfully.\n")
             
         elif choice == "2":
             message = input("Enter the message: ")
+            os.system("cls")
             genMessage(message)
             encrypt(RSA.import_key(open(os.path.join("keys", "enc_public.pem")).read())) # Encrypt using the public key
             s = addSignature(RSA.import_key(open(os.path.join("keys", "signing.pem")).read()))
+            time.sleep(0.5)
             print("\nSuccessfully encrypted and signed message.\n")
             
         elif choice == "3":
+            os.system("cls")
             if verifySignature(RSA.import_key(open(os.path.join("keys", "verifying.pem")).read())):
+                time.sleep(0.5)
                 print("\nSignature verification successful.\n")
                 d = decrypt(RSA.import_key(open(os.path.join("keys", "enc_private.pem")).read())) # Decrypt using the private key
                 print("Decoded message: " + d.decode("ascii") + "\n")
             else:
+                time.sleep(0.5)
                 print("\nSignature verification failed.\n")
             
         # Verifies the signature using an arbitrary public key
         elif choice == "4":
+            os.system("cls")
+            time.sleep(0.5)
             if verifySignature(RSA.import_key(open(os.path.join("keys", "arbitrary_key.pem")).read())):
                 print("\nSignature verification successful.\n")
                 d = decrypt(RSA.import_key(open(os.path.join("keys", "enc_private.pem")).read()))
             else:
                 print("\nSignature verification failed.\n")
         elif choice == "5":
+            os.system("cls")
+            print("Bye!")
             break
             
         else:
+            os.system("cls")
             print("\nInvalid choice. Please try again.\n")
 
 if __name__ == "__main__":
