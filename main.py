@@ -31,9 +31,8 @@ def genKeypairs():
     with open(os.path.join("keys","verifying.pem"), "wb") as f:
         f.write(verifying)
         
-def encrypt(plaintext, public_key):
-    with open("message.txt", "r") as f:
-        plaintext = f.read()
+def encrypt(public_key):
+    plaintext = get_message()
     plaintext = plaintext.encode("ascii")
     cipher_rsa = PKCS1_OAEP.new(public_key)
     ciphertext = cipher_rsa.encrypt(plaintext)
@@ -41,26 +40,38 @@ def encrypt(plaintext, public_key):
         f.write(ciphertext)
     return ciphertext
 
-def decrypt(ciphertext, private_key):
-    with open("encrypted_data.bin", "rb") as f:
-        ciphertext = f.read()
+def decrypt(private_key):
+    ciphertext = get_ciphertext()
     cipher_rsa = PKCS1_OAEP.new(private_key)
     plaintext = cipher_rsa.decrypt(ciphertext)
     return plaintext
 
-def addSignature(ciphertext, private_key):
+
+def addSignature(private_key):
+    ciphertext = get_ciphertext()
     h = SHA256.new(ciphertext)
     h.update(ciphertext)
     # Signature
     return PKCS1_v1_5.new(private_key).sign(h)
 
-# Receiver verifies the signature using the sender's public key
-def verifySignature(ciphertext, signature, public_key):
+def verifySignature(signature, verifying_key):
+    ciphertext = get_ciphertext()
     h = SHA256.new(ciphertext)
     h.update(ciphertext)
-    return PKCS1_v1_5.new(public_key).verify(h, signature)
+    return PKCS1_v1_5.new(verifying_key).verify(h, signature)
 
-# PLAYGROUND
+# Helper functions
+def get_message():
+    with open("message.txt", "r") as f:
+        plaintext = f.read()
+    return plaintext
+
+def get_ciphertext():
+    with open("encrypted_data.bin", "rb") as f:
+        ciphertext = f.read()
+    return ciphertext
+
+# Main program
 def main():
     while True:
         print("1. Generate new keypairs")
@@ -78,15 +89,15 @@ def main():
         elif choice == "2":
             message = input("Enter the message: ")
             genMessage(message)
-            t = encrypt(message, RSA.import_key(open(os.path.join("keys", "enc_public.pem")).read()))
-            s = addSignature(t, RSA.import_key(open(os.path.join("keys", "signing.pem")).read()))
+            encrypt(RSA.import_key(open(os.path.join("keys", "enc_public.pem")).read())) # Encrypt using the public key
+            s = addSignature(RSA.import_key(open(os.path.join("keys", "signing.pem")).read()))
             print("\nSuccessfully encrypted message.\n")
-            print(s)
+            # print(s)
             
         elif choice == "3":
-            if verifySignature(t, s, RSA.import_key(open(os.path.join("keys", "verifying.pem")).read())):
+            if verifySignature(s, RSA.import_key(open(os.path.join("keys", "verifying.pem")).read())):
                 print("\nSignature verification successful.\n")
-                d = decrypt(t, RSA.import_key(open(os.path.join("keys", "enc_private.pem")).read()))
+                d = decrypt(RSA.import_key(open(os.path.join("keys", "enc_private.pem")).read())) # Decrypt using the private key
                 print(d.decode("ascii") + "\n")
             else:
                 print("\nSignature verification failed.\n")
