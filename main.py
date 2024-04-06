@@ -2,9 +2,13 @@ from Cryptodome.PublicKey import RSA
 from Cryptodome.Hash import SHA256
 from Cryptodome.Signature import PKCS1_v1_5
 from Cryptodome.Cipher import PKCS1_OAEP
+import os
 
-
-# Generate a new RSA key pair and save it to a file
+def genMessage(message):
+    with open("message.in", "w") as f:
+        f.write(message)
+        
+# Every time this function is called, new keypairs are generated
 def genKeypair():
     # Generating sender's keys
     sender_key = RSA.generate(2048)
@@ -24,7 +28,9 @@ def genKeypair():
         f.write(receiver_public_key)
 
 def encrypt(plaintext, public_key):
-    plaintext = plaintext.encode("utf-8")
+    with open("message.in", "r") as f:
+        plaintext = f.read()
+    plaintext = plaintext.encode("ascii")
     cipher_rsa = PKCS1_OAEP.new(public_key)
     ciphertext = cipher_rsa.encrypt(plaintext)
     with open ("encrypted_data.bin", "wb") as f:
@@ -32,7 +38,8 @@ def encrypt(plaintext, public_key):
     return ciphertext
 
 def decrypt(ciphertext, private_key):
-    # TODO - Implement decryption by reading from rsa_key.bin
+    with open("encrypted_data.bin", "rb") as f:
+        ciphertext = f.read()
     cipher_rsa = PKCS1_OAEP.new(private_key)
     plaintext = cipher_rsa.decrypt(ciphertext)
     return plaintext
@@ -43,6 +50,7 @@ def addSignature(ciphertext, private_key):
     # Signature
     return PKCS1_v1_5.new(private_key).sign(h)
 
+# Receiver verifies the signature using the sender's public key
 def verifySignature(ciphertext, signature, public_key):
     h = SHA256.new(ciphertext)
     h.update(ciphertext)
@@ -50,13 +58,18 @@ def verifySignature(ciphertext, signature, public_key):
 
 
 # PLAYGROUND
+def main():
+    pass
 
-message = "Hello this is a test message."
+if __name__ == "__main__":
+    main()
+
+message = "Ubel best girl"
 t = encrypt(message, RSA.import_key(open("receiver_keys/receiver.pem").read()))
 s = addSignature(t, RSA.import_key(open("sender_keys/private.pem").read()))
 
-# genKeypair() -> Uncomment to generate keypairs in your directories
-#print(verifySignature(t, s, RSA.import_key(open("sender_keys/sender.pem").read()))) # Should return True if working
-
-d = decrypt(t, RSA.import_key(open("receiver_keys/private.pem").read()))
-print(d.decode("utf-8"))
+if verifySignature(t, s, RSA.import_key(open("sender_keys/sender.pem").read())):
+    d = decrypt(t, RSA.import_key(open("receiver_keys/private.pem").read()))
+    print(d.decode("ascii"))
+else:
+    print("Signature verification failed.")
