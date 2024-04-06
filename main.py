@@ -7,13 +7,22 @@ from Cryptodome.Cipher import AES, PKCS1_OAEP
 
 # Generate a new RSA key pair and save it to a file
 def genKeypair():
-    key = RSA.generate(2048)
-    private_key = key.export_key()
-    with open("private.pem", "wb") as f:
-        f.write(private_key)
-    public_key = key.publickey().export_key()
-    with open("receiver.pem", "wb") as f:
-        f.write(public_key)
+    # Generating sender's keys
+    sender_key = RSA.generate(2048)
+    sender_private_key = sender_key.export_key()
+    with open("sender_keys/private.pem", "wb") as f:
+        f.write(sender_private_key)
+    sender_public_key = sender_key.publickey().export_key()
+    with open("sender_keys/sender.pem", "wb") as f:
+        f.write(sender_public_key)
+    # Generating receiver's keys
+    receiver_key = RSA.generate(2048)
+    receiver_private_key = receiver_key.export_key()
+    with open("receiver_keys/private.pem", "wb") as f:
+        f.write(receiver_private_key)
+    receiver_public_key = receiver_key.publickey().export_key()
+    with open("receiver_keys/receiver.pem", "wb") as f:
+        f.write(receiver_public_key)
 
 def encrypt(plaintext, public_key):
     plaintext = plaintext.encode("utf-8")
@@ -29,14 +38,27 @@ def decrypt(ciphertext, private_key):
 
 def addSignature(ciphertext, private_key):
     h = SHA256.new(ciphertext)
+    h.update(ciphertext)
     # Signature
     return PKCS1_v1_5.new(private_key).sign(h)
 
 def verifySignature(ciphertext, signature, public_key):
     h = SHA256.new(ciphertext)
+    h.update(ciphertext)
     return PKCS1_v1_5.new(public_key).verify(h, signature)
 
 
+# PLAYGROUND
+
+message = "Hello this is a test message."
+t = encrypt(message, RSA.import_key(open("sender_keys/sender.pem").read()))
+s = addSignature(t, RSA.import_key(open("sender_keys/private.pem").read()))
+
+# genKeypair() -> Uncomment to generate keypairs in your directories
+print(verifySignature(t, s, RSA.import_key(open("sender_keys/sender.pem").read()))) # Should return True if working
+
+# d = decrypt(t, RSA.import_key(open("receiver_keys/private.pem").read()))
+# print(d.decode("utf-8")) -> Decrypts not working yet, will add file writing and reading + fix later
 # Encryption based on docs
 """
 message = "Hello this is a test message.".encode("utf-8")
