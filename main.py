@@ -6,6 +6,9 @@ import os
 import time
 
 def genMessage(message):
+    if len(message) > 140:
+        print("Error: Message exceeds 140 characters.")
+        return
     with open("message.txt", "w") as f:
         f.write(message)
         
