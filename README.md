@@ -4,9 +4,9 @@ This program implements RSA-OAEP encryption with separate key pairs for encrypti
 
 ### Key Features:
 
-**Key Pair Generation**: The program can generate new key pairs for encryption and signing using the `genKeypairs()` function. 
+**Key Pair Generation**: The program can generate new RSA key pairs for encryption and signing using the `genKeypairs()` function.
 
-**Encrypt-then-Sign**: The program encrypts messages using RSA-OAEP encryption and then signs the ciphertext using digital signatures. The `encrypt()` function handles the encryption, while the `addSignature()` function adds the digital signature to the encrypted data.
+**Encrypt-then-Sign**: The program encrypts messages using RSA-OAEP encryption along with a receiver's public key, and then signs the ciphertext using digital signatures. The `encrypt()` function handles the encryption, while the `addSignature()` function adds the digital signature to the encrypted data while utilizing the SHA256 hashing algorithm. 
 
 **Verify-then-Decrypt**: Upon receiving a signed ciphertext, the program verifies the signature using the sender's public key before decrypting the message. The `verifySignature()` function verifies the signature, and the `decrypt()` function decrypts the message if the signature is valid.
 
@@ -27,9 +27,11 @@ This program implements RSA-OAEP encryption with separate key pairs for encrypti
 ### PyCryptodome
 [Link to documentation](https://pycryptodome.readthedocs.io/en/latest/src/introduction.html)
 
-We are using the library independent of PyCrypto (pycryptodomex), but it is pretty much the same thing. All modules are installed under the Cryptodome package.
+We are using the library independent of PyCrypto (pycryptodomex), but it is pretty much the same thing. All modules are installed under the Cryptodome package. 
 
-The package can be installed thru the command line via
+This library has pretty much most of what we need for cryptographic operations. The packages used granted us plenty of tools to work with. Signing and verification were very straightforward following the documentation for the *Cryptodome.Signature* package. OAEP and SHA256 hashing were also implemented through the methods in their respective packages (and ofc by following some examples in the docs!). 
+
+With that being said, the package can be installed thru the command line via
 
 pip:
 ```
@@ -56,3 +58,5 @@ python main.py
 ```
 
 The program will give the user some operations. Simply input the number and whatever follows. A sample message input is already provided beforehand in *message.txt*. It is also already encoded and signed, so you should be able to use the verification-decryption operation right away.
+
+Feel free to overwrite the contents of *message.txt* via the second operation (or directly). 
