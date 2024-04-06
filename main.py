@@ -32,6 +32,7 @@ def encrypt(plaintext, public_key):
     return ciphertext
 
 def decrypt(ciphertext, private_key):
+    # TODO - Implement decryption by reading from rsa_key.bin
     cipher_rsa = PKCS1_OAEP.new(private_key)
     plaintext = cipher_rsa.decrypt(ciphertext)
     return plaintext
