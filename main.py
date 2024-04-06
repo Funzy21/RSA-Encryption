@@ -59,17 +59,39 @@ def verifySignature(ciphertext, signature, public_key):
 
 # PLAYGROUND
 def main():
-    pass
+    while True:
+        print("1. Generate new keypairs")
+        print("2. Encrypt message")
+        print("3. Decrypt message")
+        print("4. Add signature")
+        print("5. Verify signature")
+        print("6. Exit")
+        choice = input("Select Operation: ")
+        if choice == "1":
+            print("Generating new keypairs...")
+            genKeypair()
+            os.system("cls")
+            print("Keypairs generated successfully.\n")
+        elif choice == "2":
+            message = input("Enter the message: ")
+            genMessage(message)
+            t = encrypt(message, RSA.import_key(open("receiver_keys/receiver.pem").read()))
+            print("\nSuccessfully encrypted message\n")
+        elif choice == "3":
+            d = decrypt(t, RSA.import_key(open("receiver_keys/private.pem").read()))
+            print(d.decode("ascii"))
+        elif choice == "4":
+            s = addSignature(t, RSA.import_key(open("sender_keys/private.pem").read()))
+            print(s)
+        elif choice == "5":
+            if verifySignature(t, s, RSA.import_key(open("sender_keys/sender.pem").read())):
+                print("Signature verification successful.")
+            else:
+                print("Signature verification failed.")
+        elif choice == "6":
+            break
+        else:
+            print("Invalid choice. Please try again.")
 
 if __name__ == "__main__":
     main()
-
-message = "Ubel best girl"
-t = encrypt(message, RSA.import_key(open("receiver_keys/receiver.pem").read()))
-s = addSignature(t, RSA.import_key(open("sender_keys/private.pem").read()))
-
-if verifySignature(t, s, RSA.import_key(open("sender_keys/sender.pem").read())):
-    d = decrypt(t, RSA.import_key(open("receiver_keys/private.pem").read()))
-    print(d.decode("ascii"))
-else:
-    print("Signature verification failed.")
