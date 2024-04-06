@@ -2,30 +2,26 @@
 
 This program implements RSA-OAEP encryption with separate key pairs for encryption and signing, along with the encrypt-then-sign and verify-then-decrypt scheme for authenticated encryption. 
 
-<font color="greeen">
-Key Features:
-</font>
+### Key Features:
 
-*Key Pair Generation*: The program can generate new key pairs for encryption and signing using the genKeypairs() function. 
+**Key Pair Generation**: The program can generate new key pairs for encryption and signing using the `genKeypairs()` function. 
 
-*Encrypt-then-Sign*: The program encrypts messages using RSA-OAEP encryption and then signs the ciphertext using digital signatures. The encrypt() function handles the encryption, while the addSignature() function adds the digital signature to the encrypted data.
+**Encrypt-then-Sign**: The program encrypts messages using RSA-OAEP encryption and then signs the ciphertext using digital signatures. The `encrypt()` function handles the encryption, while the `addSignature()` function adds the digital signature to the encrypted data.
 
-*Verify-then-Decrypt*: Upon receiving a signed ciphertext, the program verifies the signature using the sender's public key before decrypting the message.The verifySignature() function verifies the signature, and the decrypt() function decrypts the message if the signature is valid.
+**Verify-then-Decrypt**: Upon receiving a signed ciphertext, the program verifies the signature using the sender's public key before decrypting the message. The `verifySignature()` function verifies the signature, and the `decrypt()` function decrypts the message if the signature is valid.
 
-*Simulate Incorrect Verification Key*: Lastly, the program also allows to simulate using an incorrect verification key to demonstrate that if an incorrect verification key is used, the program will fail to verify the signature, indicating that we can’t be sure if the message is correct/real or not.
+**Simulate Incorrect Verification Key**: Lastly, the program also allows simulating using an incorrect verification key to demonstrate that if an incorrect verification key is used, the program will fail to verify the signature, indicating that we can’t be sure if the message is correct/real or not.
 
-<font color="greeen">
-Usage:
-</font>
+### Usage
 
+**Generating Key Pairs**: A user can generate new key pairs by selecting the "Generate new key pairs" option. This creates separate key pairs for encryption and signing and stores them in the "keys" directory.
 
-*Generating Key Pairs*: A user can generate new key pairs by selecting the "Generate new key pairs" option. This creates separate key pairs for encryption and signing and stores them in the "keys" directory.
+**Encrypting and Signing Messages**: A user can enter a message to encrypt and sign using the "Encrypt and Sign Message" option. The program encrypts the message using the recipient's public key, adds a digital signature using the sender's private key, and saves the encrypted data and signature files.
 
-*Encrypting and Signing Messages*: A user can enter a message to encrypt and sign using the "Encrypt and Sign Message" option. The program encrypts the message using the recipient's public key, adds a digital signature using the sender's private key, and saves the encrypted data and signature files.
+**Verifying Signatures and Decrypting Messages**: A user can verify signatures and decrypt messages using the "Verify signature and Decrypt Message" option. The program verifies the signature using the sender's public key and decrypts the message if the signature is valid.
 
-*Verifying Signatures and Decrypting Messages*: A user can verify signatures and decrypt messages using the "Verify signature and Decrypt Message" option. The program verifies the signature using the sender's public key and decrypts the message if the signature is valid.
+**Simulating Incorrect Verification Key**: A user can also simulate using an incorrect verification key using the "Simulate using an incorrect verification key" option.
 
-*Simulating Incorrect Verification Key*: A user can also simulate using an incorrect verification key using the "Simulate using an incorrect verification key" option.
 ## Requirements
 
 ### PyCryptodome
