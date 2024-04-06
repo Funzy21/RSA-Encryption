@@ -1,4 +1,4 @@
-# Machine Problem 2: RSA-Encryption
+# RSA-Encryption
 
 ## Requirements
 
@@ -20,8 +20,17 @@ pip install pycryptodome-test-vectors
 python -m Cryptodome.SelfTest
 ```
 
-W/O pip (Ubuntu):
+Without pip (Linux):
 ```
 sudo apt-get update -y
 sudo apt-get install -y python3-pycryptodome
 ```
+
+## Running the program
+
+Open up a terminal in the repo's directory and simply:
+```
+python main.py
+```
+
+The program will give the user some operations. Simply input the number and whatever follows. A sample message input is already provided beforehand in *message.txt*. It is also already encoded and signed, so you should be able to use the verification-decryption operation right away.
