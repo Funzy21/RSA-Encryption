@@ -31,6 +31,11 @@ def genKeypairs():
     with open(os.path.join("keys","verifying.pem"), "wb") as f:
         f.write(verifying)
         
+    arbitrary_key = RSA.generate(2048)
+    arbitrary = arbitrary_key.publickey().export_key()
+    with open(os.path.join("keys","arbitrary_key.pem"), "wb") as f:
+        f.write(arbitrary)
+        
 def encrypt(public_key):
     plaintext = get_message()
     plaintext = plaintext.encode("ascii")
@@ -52,12 +57,17 @@ def addSignature(private_key):
     h = SHA256.new(ciphertext)
     h.update(ciphertext)
     # Signature
-    return PKCS1_v1_5.new(private_key).sign(h)
+    signature = PKCS1_v1_5.new(private_key).sign(h)
+    with open("signature.bin", "wb") as f:
+        f.write(signature)
+    return signature
 
-def verifySignature(signature, verifying_key):
+def verifySignature(verifying_key):
     ciphertext = get_ciphertext()
     h = SHA256.new(ciphertext)
     h.update(ciphertext)
+    with open("signature.bin", "rb") as f:
+        signature = f.read()
     return PKCS1_v1_5.new(verifying_key).verify(h, signature)
 
 # Helper functions
@@ -77,9 +87,9 @@ def main():
         print("1. Generate new keypairs")
         print("2. Encrypt and Sign Message")
         print("3. Verify signature and Decrypt Message")
-        print("4. Exit")
+        print("4. Simulate using an incorrect verification key")
+        print("5. Exit")
         choice = input("Select Operation: ")
-        
         if choice == "1":
             print("Generating new keypairs...")
             genKeypairs()
@@ -91,18 +101,24 @@ def main():
             genMessage(message)
             encrypt(RSA.import_key(open(os.path.join("keys", "enc_public.pem")).read())) # Encrypt using the public key
             s = addSignature(RSA.import_key(open(os.path.join("keys", "signing.pem")).read()))
-            print("\nSuccessfully encrypted message.\n")
-            # print(s)
+            print("\nSuccessfully encrypted and signed message.\n")
             
         elif choice == "3":
-            if verifySignature(s, RSA.import_key(open(os.path.join("keys", "verifying.pem")).read())):
+            if verifySignature(RSA.import_key(open(os.path.join("keys", "verifying.pem")).read())):
                 print("\nSignature verification successful.\n")
                 d = decrypt(RSA.import_key(open(os.path.join("keys", "enc_private.pem")).read())) # Decrypt using the private key
-                print(d.decode("ascii") + "\n")
+                print("Decoded message: " + d.decode("ascii") + "\n")
             else:
                 print("\nSignature verification failed.\n")
-               
+            
+        # Verifies the signature using an arbitrary public key
         elif choice == "4":
+            if verifySignature(RSA.import_key(open(os.path.join("keys", "arbitrary_key.pem")).read())):
+                print("\nSignature verification successful.\n")
+                d = decrypt(RSA.import_key(open(os.path.join("keys", "enc_private.pem")).read()))
+            else:
+                print("\nSignature verification failed.\n")
+        elif choice == "5":
             break
             
         else:

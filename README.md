@@ -5,7 +5,7 @@
 ### PyCryptodome
 [Link to documentation](https://pycryptodome.readthedocs.io/en/latest/src/introduction.html)
 
-We are using the library independent of PyCrypto. All modules are installed under the Cryptodome package.
+We are using the library independent of PyCrypto (pycryptodomex), but it is pretty much the same thing. All modules are installed under the Cryptodome package.
 
 The package can be installed thru the command line via via 
 
