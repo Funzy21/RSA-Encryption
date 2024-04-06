@@ -29,7 +29,7 @@ This program implements RSA-OAEP encryption with separate key pairs for encrypti
 
 We are using the library independent of PyCrypto (pycryptodomex), but it is pretty much the same thing. All modules are installed under the Cryptodome package.
 
-The package can be installed thru the command line via via 
+The package can be installed thru the command line via
 
 pip:
 ```
